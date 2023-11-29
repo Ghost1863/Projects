@@ -46,12 +46,12 @@ int main()
 
 void PrintingReference(){
 	printf("%s\n%s\n%s\n%s\n%s\n%s\n",
-		"0                                                      ",
-		"1                             1                  ",
-		"2                             2                  ",
-		"3                             3                  ",
-		"4                             4                  ",
-		"5                           ,                            .");
+		"0 Ц вывод текста после первичной об€зательной обработки",
+		"1 Ц вызов функции под номером 1 из списка задани€",
+		"2 Ц вызов функции под номером 2 из списка задани€",
+		"3 Ц вызов функции под номером 3 из списка задани€",
+		"4 Ц вызов функции под номером 4 из списка задани€",
+		"5 Ц вывод справки о функци€х, которые реализует программа.");
 }
 
 void InputHandler() {
@@ -115,7 +115,7 @@ void InputHandler() {
 		PrintingReference();
 		break;
 	default:
-		printf("Error:              ");
+		printf("Error: Ќеверный ввод");
 		break;
 
 	}
@@ -128,9 +128,9 @@ char* get_input(int* input_sentences_number) {
 	char char_temp = 0;
 	char* text = malloc(sizeof(char) * capacity);
 
-	//                                                
+	//динамическое выделение пам€ти под исходный текст
 	while (char_temp = getchar()) {
-		//                2         -               ,                 
+		// если последние 2 символа - перенос строки, завершаем чтение
 		if (char_temp == '\n') {
 			if (length > 0 && text[length - 1] == '\n')
 				break;
@@ -139,12 +139,12 @@ char* get_input(int* input_sentences_number) {
 			printf("Error:Forbidden to start text with '.'\n ");
 			break;
 		}
-		//                       text 
+		//увеличение вместимости text 
 		if (length >= capacity) {
 			capacity += BLOCK_SIZE;
 			text = realloc(text, capacity * sizeof(char));
 		}
-		//                   
+		//считаем предложени€
 		if (char_temp == '.') {
 			(*input_sentences_number)++;
 		}
@@ -201,7 +201,7 @@ char** split_text_by_sentences(char* text, char* splitters,
 
 			int chr_temp = 0;
 			for (int j = last_ind; j >= 0; j--) {
-				//                                                       (             )
+				//пропускаем пробел и перенос строки в начале предложени€(если они есть)
 				if ((j == last_ind) && (isspace(text[i - j])))
 					continue;
 				splitted_text[sentences_counter - 1][chr_temp++] = text[i - j];
@@ -218,10 +218,10 @@ char** split_text_by_sentences(char* text, char* splitters,
 		last_ind++;
 	}
 	*output_sentences_number = sentences_counter;
-	printf("%d                                   \n", *output_sentences_number);
-	//                                 
+	printf("%d предложений до первичной обработки\n", *output_sentences_number);
+	//убираем повтор€ющиес€ предложени€
 	removeDuplicates(splitted_text, output_sentences_number);
-	printf("%d                                      \n\n", *output_sentences_number);
+	printf("%d предложений после первичной обработки\n\n", *output_sentences_number);
 	return splitted_text;
 }
 
@@ -311,8 +311,8 @@ void sortUppercaseWordsInSentence(char** splitted_text,
 	{
 		int numWordsInSentence = countWordsInSentence(splitted_text[i]);
 
-		//                   
-		//                                                      
+		//массив разделителей
+		//оставл€ем место дл€ разделител€ после последнего слова
 		char** splitters = malloc(sizeof(char*) * (numWordsInSentence));
 		splitters[0] = malloc(sizeof(char) * 10);
 		int current_splitter = 0;
@@ -331,7 +331,7 @@ void sortUppercaseWordsInSentence(char** splitted_text,
 			}
 		}
 	
-		//                         
+		//массив слов в предложении
 		char** words=malloc(sizeof(char*)*numWordsInSentence);
 		char* word = strtok(splitted_text[i], " ,\t\n.");
 		int word_counter = 0;
@@ -342,7 +342,7 @@ void sortUppercaseWordsInSentence(char** splitted_text,
 			word = strtok(NULL, " ,\t\n.");
 			word_counter++;
 		}
-		//                                                        
+		//сортировка слов по возрастанию количества заглавных букв
 		qsort(words, numWordsInSentence, sizeof(char*), compareUppercaseLetters);
 
 		for (int k = 0; k < numWordsInSentence; k++) {
@@ -369,7 +369,7 @@ void replaceLessThanThreeSymbolsWords(char** splitted_text,
 	{
 		int numWordsInSentence = countWordsInSentence(splitted_text[i]);
 
-		//                   
+		//массив разделителей
 		char** splitters = malloc(sizeof(char*) * (numWordsInSentence));
 		splitters[0] = malloc(sizeof(char) * 10);
 		int current_splitter = 0;
@@ -389,7 +389,7 @@ void replaceLessThanThreeSymbolsWords(char** splitted_text,
 			}
 		}
 	
-		//                         
+		//массив слов в предложении
 		char** words = malloc(sizeof(char*) * numWordsInSentence);
 		char* word = strtok(splitted_text[i], " ,\t\n.");
 		int word_counter = 0;
@@ -430,7 +430,7 @@ void PrintMaxDigitWords(char** splitted_text,
 	for (int i = 0; i < *output_sentence_number; i++)
 	{
 		int numWordsInSentence = countWordsInSentence(splitted_text[i]);
-		//                         
+		//массив слов в предложении
 		char** words = malloc(sizeof(char*) * numWordsInSentence);
 		char* word = strtok(splitted_text[i], " ,\t\n.");
 		int word_counter = 0;
@@ -442,7 +442,7 @@ void PrintMaxDigitWords(char** splitted_text,
 			word_counter++;
 		}
 	
-		//                                                                  
+		//находим самое длинное слово в предложении и записывае его в массив
 		int max_len = 0;
 		int max_ind = 0;
 		for (int k = 0; k < numWordsInSentence; k++) {	
@@ -455,7 +455,7 @@ void PrintMaxDigitWords(char** splitted_text,
 		free(words);
 	}
 	printf("\n");
-	//                                    ,                                     
+	//сортировка слов по возрастанию длины, вывод на экран и освобождение пам€ти
 	qsort(max_len_words, *output_sentence_number, sizeof(char*), compareWordsLength);
 	for (int i = 0; i < *output_sentence_number; i++)
 	{
@@ -463,4 +463,4 @@ void PrintMaxDigitWords(char** splitted_text,
 		free(max_len_words[i]);
 	}
 	free (max_len_words);
-}v
+}
