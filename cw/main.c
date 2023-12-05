@@ -35,6 +35,7 @@ void replaceLessThanThreeSymbolsWords(char** splitted_text,
 	int* output_sentences_number);
 
 int compareWordsLength(const void* a, const void* b);
+int compareUppercaseLetters(const void* a, const void* b);
 
 void PrintMaxDigitStrings(char** splitted_text,
 	int* output_sentence_number);
@@ -62,9 +63,9 @@ void inputHandler() {
 	
 	printf("%s\n", START_SENTENCE);
 	int user_choice = 0;
-	scanf("%i", &user_choice);
+	scanf("%d", &user_choice);
 	getchar();
-	
+
 	int output_sentences_number = 0;
 	char* text = NULL;
 	char** splitted_text = NULL;
@@ -148,7 +149,10 @@ char* getInput() {
 			text = realloc(text, capacity * sizeof(char));
 		}
 		text[length++] = char_temp;
-	}
+	}	
+	text[length] = '\0';
+	if (text[strlen(text) - 2] != '.')
+		text[strlen(text) - 2] = '.';
 	return text;
 }
 
@@ -196,12 +200,7 @@ char** splitTextBySentences(char* text, char* splitters,
 
 				//обработка корректного ввода разделителей
 				if (isspace(text[i - j]) && isspace(text[i - j - 1]) ||
-					text[i - j] == ',' && text[i - j - 1] == ','||
-					text[i - j] == ',' && text[i - j - 2] == ','&& isspace(text[i-j-1])||
-					isspace(text[i - j])  && isspace(text[i - j - 2]) && (text[i - j - 1]==',')&& text[i-j-3]==','||
-					text[i - j]==',' && isspace(text[i - j - 1]) && isspace(text[i - j - 3]) && text[i - j - 2] == ','||
-					isspace(text[i - j]) && text[i - j - 1]==',' && text[i - j - 2] == ',' ||
-					text[i - j]==',' && isspace(text[i - j - 1]) && isspace(text[i - j - 2]))
+					text[i - j] == ',' && text[i - j - 1] == ',')
 					continue;
 				splitted_text[sentences_counter - 1][chr_temp++] = text[i - j];
 			}
@@ -228,7 +227,7 @@ void removeDuplicates(char** splitted_text, int* num_sentences) {
 	//removing duplicate sentences
 	for (int i = 0; i < *num_sentences; i++) {
 		for (int j = i + 1; j < *num_sentences; j++) {
-			if (stricmp(splitted_text[i], splitted_text[j]) == 0) {
+			if (strcmpi(splitted_text[i], splitted_text[j]) == 0) {
 				free(splitted_text[j]);
 				for (int k = j; k < *num_sentences; k++) {
 					splitted_text[k] = splitted_text[k + 1];
@@ -261,7 +260,7 @@ int countWordsInSentence(char* sentence) {
 	{
 		if (!isspace(sentence[i]) && sentence[i] != ',') {
 			if (!inWord) {
-				inWord = 1;
+				inWord = TRUE;
 				counter++;
 			}
 		}
@@ -323,7 +322,7 @@ void sortUppercaseWordsInSentence(char** splitted_text,
 					splitters[current_splitter][counter++] = splitted_text[i][j++];	
 				}
 				splitters[current_splitter][counter] = '\0';
-				if (current_splitter < numWordsInSentence - 2) { //-1
+				if (current_splitter < numWordsInSentence - 1) { 
 					current_splitter++;
 					splitters[current_splitter] = malloc(sizeof(char) * 10);
 				}
@@ -344,23 +343,22 @@ void sortUppercaseWordsInSentence(char** splitted_text,
 		//сортировка слов по возрастанию количества заглавных букв
 		qsort(words, numWordsInSentence, sizeof(char*), compareUppercaseLetters);
 		for (int k = 0; k < numWordsInSentence; k++) {
-			
-				printf("%s", words[k]);
-				if (k < current_splitter + 1 && numWordsInSentence != 1)
-				printf("%s", splitters[k]);
+			printf("%s", words[k]);
+			if (k < current_splitter + 1 && (strchr(splitters[k], ' ')
+				|| strchr(splitters[k], ',') || strchr(splitters[k], '\t')))
+			printf("%s", splitters[k]);
 		}
 		printf(".\n");
 		for (int i = 0; i < current_splitter+1; i++)
-		{
 			free(splitters[i]);
-		}
+
 		free(words);
-		if (numWordsInSentence > 1)
-			free(splitters);
+		free(splitters);
 	}
 }
 
 //user_choice 3
+
 void replaceLessThanThreeSymbolsWords(char** splitted_text,
 	int* output_sentence_number) {
 	for (int i = 0; i < *output_sentence_number; i++)
@@ -380,7 +378,7 @@ void replaceLessThanThreeSymbolsWords(char** splitted_text,
 					splitters[current_splitter][counter++] = splitted_text[i][j++];
 				}
 				splitters[current_splitter][counter] = '\0';
-				if (current_splitter < numWordsInSentence-2 ) {   //-1
+				if (current_splitter < numWordsInSentence-1 ) {  
 					current_splitter++;
 					splitters[current_splitter] = malloc(sizeof(char) * 10);
 				}
@@ -404,23 +402,24 @@ void replaceLessThanThreeSymbolsWords(char** splitted_text,
 				printf("%s", words[k]);
 			else
 				printf("Less Then 3");	
-			if (k < current_splitter+1 && numWordsInSentence != 1)
+			if (k < current_splitter+1 &&( strchr(splitters[k],' ')
+				|| strchr(splitters[k], ',')|| strchr(splitters[k], '\t')))
 				printf("%s", splitters[k]);
 		}
 		for (int i = 0; i < current_splitter +1; i++)
-		{
 			free(splitters[i]);
-		}
+
 		printf(".\n");
 		free(words);
-		if (numWordsInSentence>1)
-			free(splitters);
+		free(splitters);
 	}
 }
+
 //user_choice 4
 int compareWordsLength(const void* a, const void* b) {
 	return strlen(*(char**)b) - strlen(*(char**)a);
 }
+
 void PrintMaxDigitStrings(char** splitted_text,
 	int* output_sentence_number) {
 	char** max_strings= malloc(sizeof(char*) * *output_sentence_number);
@@ -435,22 +434,21 @@ void PrintMaxDigitStrings(char** splitted_text,
 				break;
 			}
 		}
-		for (int k = strlen(splitted_text[i]); k >0; k--)
+		for (int k = strlen(splitted_text[i]); k >=0; k--)
 		{
 			if (isdigit(splitted_text[i][k])) {
 				last_ind = k;
 				break;
 			}
 		}
-		if (!isdigit(splitted_text[i][first_ind])&& !isdigit(splitted_text[i][last_ind]))
-			printf("Warning:Sentence %d has no digits\n", i);
+		/*if (!isdigit(splitted_text[i][first_ind])&& !isdigit(splitted_text[i][last_ind]))
+			printf("Warning:Sentence %d has no digits\n", i);*/
 
 		char* string=malloc(sizeof(char)*(last_ind-first_ind+2));
 		strncpy(string, splitted_text[i] + first_ind, last_ind-first_ind+1);
 		string[last_ind - first_ind+1] = '\0';
 		max_strings[i] = strdup(string);
-		if (max_strings[i][strlen(max_strings[i]) - 1] == '.')
-			max_strings[i][strlen(max_strings[i]) - 1] = '\0';
+		
 		free(string);
 	}
 
