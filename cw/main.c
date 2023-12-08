@@ -43,7 +43,7 @@ void PrintMaxDigitStrings(char** splitted_text,
 
 int main()
 {
-	setlocale(LC_ALL, "");
+	setlocale(LC_ALL, "Russian");
 	inputHandler();
 	
 	return 0;
@@ -101,7 +101,7 @@ void inputHandler() {
 		splitted_text = splitTextBySentences(text, ".",
 			&output_sentences_number);
 		sortUppercaseWordsInSentence(splitted_text, &output_sentences_number);
-		//freeMemory(text, splitted_text, &output_sentences_number);
+		freeMemory(text, splitted_text, &output_sentences_number);
 
 		break;
 	}
@@ -110,14 +110,14 @@ void inputHandler() {
 		splitted_text = splitTextBySentences(text, ".",
 			&output_sentences_number);
 		replaceLessThanThreeSymbolsWords(splitted_text, &output_sentences_number);
-		//freeMemory(text, splitted_text, &output_sentences_number);
+		freeMemory(text, splitted_text, &output_sentences_number);
 		break;
 	case '4':
 		text = getInput();
 		splitted_text = splitTextBySentences(text, ".",
 			&output_sentences_number);
 		PrintMaxDigitStrings(splitted_text, &output_sentences_number);
-		//freeMemory(text, splitted_text, &output_sentences_number);
+		freeMemory(text, splitted_text, &output_sentences_number);
 		break;
 	case '5':
 		printingReference();
@@ -134,7 +134,7 @@ char* getInput() {
 	int length = 0;
 	int capacity = BLOCK_SIZE;
 	char char_temp = 0;
-	char* text = malloc(sizeof(char) * capacity) ;
+	char* text = malloc(sizeof(char) * capacity);
 
 	//динамическое выделение памяти под исходный текст
 	while ((char_temp = getchar())) {
@@ -214,7 +214,6 @@ char** splitTextBySentences(char* text, char* splitters,
 			}
 			splitted_text[sentences_counter - 1][chr_temp] = '\0';
 			last_ind = 0;
-
 			continue;
 		}
 		was_letter_printed = 0;
@@ -316,7 +315,7 @@ void sortUppercaseWordsInSentence(char** splitted_text,
 		//массив разделителей
 		//оставляем место для разделителя после последнего слова
 		char** splitters = malloc(sizeof(char*) * (numWordsInSentence));
-		splitters[0] = malloc(sizeof(char) * 10);
+		splitters[0] = calloc(10,sizeof(char));
 		int current_splitter = 0;
 		for (int j = 0; j < strlen(splitted_text[i]); j++)
 		{
@@ -328,7 +327,7 @@ void sortUppercaseWordsInSentence(char** splitted_text,
 				splitters[current_splitter][counter] = '\0';
 				if (current_splitter < numWordsInSentence - 1) {
 					current_splitter++;
-					splitters[current_splitter] = malloc(sizeof(char) * 10);
+					splitters[current_splitter] = calloc(10,sizeof(char));
 				}
 			}
 		}
@@ -349,8 +348,9 @@ void sortUppercaseWordsInSentence(char** splitted_text,
 		for (int k = 0; k < numWordsInSentence; k++) {
 			printf("%s", words[k]);
 			if (k < current_splitter + 1 && (strchr(splitters[k], ' ')
-				|| strchr(splitters[k], ',') || strchr(splitters[k], '\t')))
+			|| strchr(splitters[k], ',') || strchr(splitters[k], '\t') || strchr(splitters[k], '\n')))
 				printf("%s", splitters[k]);
+				
 		}
 		printf(".\n");
 		for (int i = 0; i < current_splitter + 1; i++)
@@ -370,10 +370,10 @@ void replaceLessThanThreeSymbolsWords(char** splitted_text,
 		int numWordsInSentence = countWordsInSentence(splitted_text[i]);
 
 		//массив разделителей
+		//оставляем место для разделителя после последнего слова
 		char** splitters = malloc(sizeof(char*) * (numWordsInSentence));
-		splitters[0] = malloc(sizeof(char) * 10);
+		splitters[0] = calloc(10, sizeof(char));
 		int current_splitter = 0;
-
 		for (int j = 0; j < strlen(splitted_text[i]); j++)
 		{
 			int counter = 0;
@@ -384,7 +384,7 @@ void replaceLessThanThreeSymbolsWords(char** splitted_text,
 				splitters[current_splitter][counter] = '\0';
 				if (current_splitter < numWordsInSentence - 1) {
 					current_splitter++;
-					splitters[current_splitter] = malloc(sizeof(char) * 10);
+					splitters[current_splitter] = calloc(10, sizeof(char));
 				}
 			}
 		}
@@ -407,12 +407,12 @@ void replaceLessThanThreeSymbolsWords(char** splitted_text,
 			else
 				printf("Less Then 3");
 			if (k < current_splitter + 1 && (strchr(splitters[k], ' ')
-				|| strchr(splitters[k], ',') || strchr(splitters[k], '\t')))
+				|| strchr(splitters[k], ',') || strchr(splitters[k], '\t')|| strchr(splitters[k],'\n')))
 				printf("%s", splitters[k]);
 		}
+		
 		for (int i = 0; i < current_splitter + 1; i++)
 			free(splitters[i]);
-
 		printf(".\n");
 		free(words);
 		free(splitters);
