@@ -13,6 +13,5 @@ void print_info_header(DIBHeader header);
 
 void free_bmpfile(BMPFile* bmpf);
 
-void a(int argc,char* argv[]);
 #endif
 

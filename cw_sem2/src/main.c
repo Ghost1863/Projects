@@ -11,14 +11,18 @@ int main(char argc, char* argv[]){
    FunctionParams* fp=parse_command_line(argc,argv);
    BMPFile* bmpf=read_bmp(fp->input_file);
     
-   //print_file_header(bmpf->bmph);
-   //print_info_header(bmpf->dibh);
-   if (fp->rect)
+   if (fp->rect){
+      check_rect(fp,bmpf->dibh.height,bmpf->dibh.width);
       bmpf->rgb=draw_rectangle(fp,bmpf);
-   if (fp->ornament)
+   }
+   if (fp->ornament){
+      check_ornament(fp);
       bmpf->rgb=draw_ornament(fp,bmpf);
-   if (fp->rotate)
+   }
+   if (fp->rotate){
+      check_rotate(fp,bmpf->dibh.height,bmpf->dibh.width);
       bmpf->rgb=rotate_image(fp,bmpf);
+   }
    
 
    write_bmp(fp->output_file,bmpf);

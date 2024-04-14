@@ -11,10 +11,10 @@ char** parse_line(char* line,int num_val);
 
 void raise_error(const char* message, int error_code);
 
-void check_rect(FunctionParams* fp);
+void check_rect(FunctionParams* fp,int height,int width);
 
 void check_ornament(FunctionParams* fp);
 
-void check_rotate(FunctionParams* fp);
+void check_rotate(FunctionParams* fp,int height, int width);
 
 #endif

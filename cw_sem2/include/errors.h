@@ -20,6 +20,8 @@ const char* coords_error="Error: Invalid coordinates";
 
 const char* thickness_error="Error: Invalid thickness";
 
+const char* pattern_error="Error: Invalid pattern";
+
 const char* count_error="Error: Invalid count";
 
 const char* angle_error="Error: Invalid angle";

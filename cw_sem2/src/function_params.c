@@ -32,16 +32,27 @@ char** parse_line(char* line,int num_val){
 FunctionParams* initFunctionalParams(FunctionParams* fp){
     fp->rect=false;
     fp->rect_fill=false;
-    fp->rect_left=-1000;
-	fp->rect_up=-1000;
-	fp->rect_right=-1000;
-	fp->rect_down=-1000;
+    fp->rect_left=0;
+	fp->rect_up=0;
+	fp->rect_right=0;
+	fp->rect_down=0;
 	fp->rect_thickness=-1;
 	fp->rect_color.r=0;fp->rect_color.g=0;fp->rect_color.b=0;
     fp->rect_fill_color.r=0;fp->rect_fill_color.g=0;fp->rect_fill_color.b=0;
 
-    fp->rotate=false;
     fp->ornament=false;
+	fp->ornament_pattern=0;
+	fp->ornament_color.r=0;fp->ornament_color.g=0;fp->ornament_color.b=0;
+	fp->ornament_thickness=0;
+	fp->ornament_count=0;
+
+	fp->rotate=false;
+	fp->rotate_left=0;
+	fp->rotate_up=0;
+	fp->rotate_right=0;
+	fp->rotate_down=0;
+	fp->rotate_angle=0;
+
     fp->input_file=NULL;
     fp->output_file=NULL;
 }
@@ -161,7 +172,7 @@ FunctionParams* parse_command_line(int argc,char* argv[]){
             break;
         case 266://--rotate
             if(!fp->ornament && !fp->rect)
-                fp->ornament=true;
+                fp->rotate=true;
             else
                 raise_error(multiple_func_error,43);  
             break;
@@ -178,32 +189,35 @@ FunctionParams* parse_command_line(int argc,char* argv[]){
         raise_error(input_file_error,40);
     if(!fp->output_file)
         raise_error(output_file_error,40);
-    if (fp->rect)
-      check_rect(fp);
-    if (fp->ornament)
-      check_ornament(fp);
-    if (fp->rotate)
-      check_rotate(fp);
-      
     return fp;
 }
 
-void check_rect(FunctionParams* fp){
+void check_rect(FunctionParams* fp,int height, int width){
     if(fp->rect_left>fp->rect_right || fp->rect_up<fp->rect_down||
-    fp->rect_left<0 || fp->rect_right<0 || fp->rect_up<0 || fp->rect_down<0) 
+    fp->rect_left<0 || fp->rect_right<0 || fp->rect_up<0 || fp->rect_down<0 ||
+    fp->rect_left>width || fp->rect_right>width || fp->rect_up>height 
+    || fp->rect_down>height ) 
         raise_error(coords_error,45);
     if(fp->rect_thickness<=0)
         raise_error(thickness_error,45);   
 }
 
 void check_ornament(FunctionParams* fp){
-      if(fp->ornament_thickness<=0)
-        raise_error(thickness_error,45);   
+    if (fp->ornament_pattern==0)
+        raise_error(pattern_error,45);
+    if(fp->ornament_thickness<=0)
+        raise_error(thickness_error,45); 
+    if(fp->ornament_count<=0)
+        raise_error(count_error,45);  
 }
 
-void check_rotate(FunctionParams* fp){
+void check_rotate(FunctionParams* fp,int height,int width){
     if(fp->rotate_left>fp->rotate_right || fp->rotate_up<fp->rotate_down||
-    fp->rect_left<0 || fp->rotate_right<0 || fp->rotate_up<0 || fp->rotate_down<0) 
+    fp->rotate_left<0 || fp->rotate_right<0 || fp->rotate_up<0 || fp->rotate_down<0 ||
+    fp->rotate_left>width || fp->rotate_right>width || fp->rotate_up>height || fp->rotate_down>height ||
+    fp->rotate_right-fp->rotate_left>height || fp->rotate_up-fp->rotate_down>width) 
         raise_error(coords_error,45);
+    if (fp->rotate_angle!=90 && fp->rotate_angle!=180 && fp->rotate_angle!=270)
+        raise_error(angle_error,45);
 }
 #endif
