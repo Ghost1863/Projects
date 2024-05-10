@@ -10,13 +10,13 @@
 #ifndef FUNCTION_PARAMS_C
 #define FUNCTION_PARAMS_C
 
-char** parse_line(char* line,int num_val){
+char** parseLine(char* line,int num_val){
     char** parsed_line=malloc(20*sizeof(char*));
     for (int i=0;i<num_val;i++){
         parsed_line[i]=malloc(strlen(line)*sizeof(char));
     }
     int current=0;
-    int len=0;
+    int len=0 ;
     for (int i = 0; i < strlen(line); i++){
             if(i>0 && line[i-1]=='.'){
                 parsed_line[current][len-1]='\0';        
@@ -31,38 +31,28 @@ char** parse_line(char* line,int num_val){
 
 FunctionParams* initFunctionalParams(FunctionParams* fp){
     fp->rect=false;
-    fp->rect_fill=false;
-    fp->rect_left=0;
-	fp->rect_up=0;
-	fp->rect_right=0;
-	fp->rect_down=0;
-	fp->rect_thickness=-1;
-	fp->rect_color.r=0;fp->rect_color.g=0;fp->rect_color.b=0;
-    fp->rect_fill_color.r=0;fp->rect_fill_color.g=0;fp->rect_fill_color.b=0;
+    fp->fill=false;
+    fp->x0=0;
+	fp->x1=0;
+	fp->y0=0;
+	fp->y1=0;
+	fp->thickness=0;
+	fp->color.r=-1;fp->color.g=-1;fp->color.b=-1;
+    fp->fill_color.r=-1;fp->fill_color.g=-1;fp->fill_color.b=-1;
 
     fp->ornament=false;
-	fp->ornament_pattern=0;
-	fp->ornament_color.r=0;fp->ornament_color.g=0;fp->ornament_color.b=0;
-	fp->ornament_thickness=0;
-	fp->ornament_count=0;
+	fp->pattern=0;
+	fp->count=0;
 
 	fp->rotate=false;
-	fp->rotate_left=0;
-	fp->rotate_up=0;
-	fp->rotate_right=0;
-	fp->rotate_down=0;
-	fp->rotate_angle=0;
+	fp->angle=0;
 
+    fp->help=true;
     fp->input_file=NULL;
     fp->output_file=NULL;
 }
 
-void raise_error(const char* message, int error_code){
-    printf("%s\n",message);
-    exit(error_code);
-}
-
-FunctionParams* parse_command_line(int argc,char* argv[]){
+FunctionParams* parseCommandLine(int argc,char* argv[]){
     
     opterr=0;
     const char* short_options = "hi:o:";
@@ -93,131 +83,166 @@ FunctionParams* parse_command_line(int argc,char* argv[]){
         switch (result)
         {
         case 'h'://-help
-            printf("1");
+            printHelp();
             break;
+
         case 'i'://-input
             fp->input_file=optarg;
             break;
+
         case 'o'://-output
             fp->output_file=optarg;
             break;
+
         case 256://--rect
-            if(!fp->ornament && !fp->rotate)
-                fp->rect=true;
-            else
-                raise_error(multiple_func_error,43);          
-            break;
-        case 257://--left_up
-            if (fp->rect){
-                fp->rect_left = strtol(parse_line(optarg,2)[0], NULL, 10);
-                fp->rect_up= strtol(parse_line(optarg,2)[1], NULL, 10);
-            }else if (fp->rotate){
-                fp->rotate_left = strtol(parse_line(optarg,2)[0], NULL, 10);
-                fp->rotate_up= strtol(parse_line(optarg,2)[1], NULL, 10);
-            }
-            break;
-        case 258://--right_down
-            if (fp->rect){
-                fp->rect_right = strtol(parse_line(optarg,2)[0], NULL, 10);
-                fp->rect_down= strtol(parse_line(optarg,2)[1], NULL, 10);
-            } else if(fp->rotate){
-                fp->rotate_right = strtol(parse_line(optarg,2)[0], NULL, 10);
-                fp->rotate_down= strtol(parse_line(optarg,2)[1], NULL, 10);
-            }
-            break;
-        case 259://--thickness
-            if (fp->rect)
-                fp->rect_thickness=strtol(optarg,NULL,10);
-            else if(fp->ornament)
-                fp->ornament_thickness=strtol(optarg,NULL,10);
-            break;
-        case 260://--color
-            if (fp->rect){
-                fp->rect_color.r=strtol(parse_line(optarg,3)[0], NULL, 10);
-                fp->rect_color.g=strtol(parse_line(optarg,3)[1], NULL, 10);
-                fp->rect_color.b=strtol(parse_line(optarg,3)[2], NULL, 10);
-            }else if(fp->ornament){
-                fp->ornament_color.r=strtol(parse_line(optarg,3)[0], NULL, 10);
-                fp->ornament_color.g=strtol(parse_line(optarg,3)[1], NULL, 10);
-                fp->ornament_color.b=strtol(parse_line(optarg,3)[2], NULL, 10);
-            }
-            break;
-        case 261://--fill
-            fp->rect_fill=true;
-            break;
-        case 262://--fill_color
-            fp->rect_fill_color.r=strtol(parse_line(optarg,3)[0], NULL, 10);
-            fp->rect_fill_color.g=strtol(parse_line(optarg,3)[1], NULL, 10);
-            fp->rect_fill_color.b=strtol(parse_line(optarg,3)[2], NULL, 10);
-            break;
-        case 263://--ornament
-            if(!fp->rect && !fp->rotate)
-                fp->ornament=true;
-            else
-                raise_error(multiple_func_error,43);  
-            break;
-        case 264://--pattern
-            if(strcmp(optarg,"rectangle")==0){
-                fp->ornament_pattern=1;
-            }
-            else if(strcmp(optarg,"circle")==0){
-                fp->ornament_pattern=2;
-            }
-            else if(strcmp(optarg,"semicircle")==0){
-                fp->ornament_pattern=3;
-            }
-            break;
-        case 265://--count
-            fp->ornament_count=strtol(optarg,NULL,10);;
-            break;
-        case 266://--rotate
-            if(!fp->ornament && !fp->rect)
-                fp->rotate=true;
-            else
-                raise_error(multiple_func_error,43);  
-            break;
-        case 267://--angle
-            fp->rotate_angle=strtol(optarg,NULL,10);
+            fp->rect=true;   
             break;
 
+        case 257://--left_up
+            fp->x0 = strtol(parseLine(optarg,2)[0], NULL, 10);
+            fp->y0= strtol(parseLine(optarg,2)[1], NULL, 10);
+            break;
+
+        case 258://--right_down
+            fp->x1 = strtol(parseLine(optarg,2)[0], NULL, 10);
+            fp->y1= strtol(parseLine(optarg,2)[1], NULL, 10);
+            break;
+
+        case 259://--thickness
+            fp->thickness=strtol(optarg,NULL,10);
+            break;
+
+        case 260://--color
+            fp->color.r=strtol(parseLine(optarg,3)[0], NULL, 10);
+            fp->color.g=strtol(parseLine(optarg,3)[1], NULL, 10);
+            fp->color.b=strtol(parseLine(optarg,3)[2], NULL, 10);
+            break;
+
+        case 261://--fill
+            fp->fill=true;
+            break;
+            
+        case 262://--fill_color
+            fp->fill_color.r=strtol(parseLine(optarg,3)[0], NULL, 10);
+            fp->fill_color.g=strtol(parseLine(optarg,3)[1], NULL, 10);
+            fp->fill_color.b=strtol(parseLine(optarg,3)[2], NULL, 10);
+            break;
+
+        case 263://--ornament
+            fp->ornament=true;
+            break;
+
+        case 264://--pattern
+            if(strcmp(optarg,"rectangle")==0){
+                fp->pattern=1;
+            }
+            else if(strcmp(optarg,"circle")==0){
+                fp->pattern=2;
+            }
+            else if(strcmp(optarg,"semicircles")==0){
+                fp->pattern=3;
+            }
+            break;
+
+        case 265://--count
+            fp->count=strtol(optarg,NULL,10);;
+            break;
+
+        case 266://--rotate
+            fp->rotate=true;
+            break;
+
+        case 267://--angle
+            fp->angle=strtol(optarg,NULL,10);
+            break;
+            
+        case '?':
+            raiseError(args_error,43);
+            break;
+            
         default:
+            
             break;
         }
      }
     
+    checkFunctionsNumber(fp);
     if(!fp->input_file)
-        raise_error(input_file_error,40);
+        exit(0);
     if(!fp->output_file)
-        raise_error(output_file_error,40);
+        exit(0);
     return fp;
 }
 
-void check_rect(FunctionParams* fp,int height, int width){
-    if(fp->rect_left>fp->rect_right || fp->rect_up<fp->rect_down||
-    fp->rect_left<0 || fp->rect_right<0 || fp->rect_up<0 || fp->rect_down<0 ||
-    fp->rect_left>width || fp->rect_right>width || fp->rect_up>height 
-    || fp->rect_down>height ) 
-        raise_error(coords_error,45);
-    if(fp->rect_thickness<=0)
-        raise_error(thickness_error,45);   
+void swap(int* a,int* b){
+    int temp= *a;
+    *a=*b;
+    *b=temp;
 }
 
-void check_ornament(FunctionParams* fp){
-    if (fp->ornament_pattern==0)
-        raise_error(pattern_error,45);
-    if(fp->ornament_thickness<=0)
-        raise_error(thickness_error,45); 
-    if(fp->ornament_count<=0)
-        raise_error(count_error,45);  
+void checkFunctionsNumber(FunctionParams* fp){
+    int count=0;
+    if(fp->rect) 
+        count++;
+    if(fp->ornament)
+        count++;
+    if(fp->rotate)
+        count++;
+    if (count>1)
+        raiseError(multiple_func_error,43);
 }
 
-void check_rotate(FunctionParams* fp,int height,int width){
-    if(fp->rotate_left>fp->rotate_right || fp->rotate_up<fp->rotate_down||
-    fp->rotate_left<0 || fp->rotate_right<0 || fp->rotate_up<0 || fp->rotate_down<0 ||
-    fp->rotate_left>width || fp->rotate_right>width || fp->rotate_up>height || fp->rotate_down>height ||
-    fp->rotate_right-fp->rotate_left>height || fp->rotate_up-fp->rotate_down>width) 
-        raise_error(coords_error,45);
-    if (fp->rotate_angle!=90 && fp->rotate_angle!=180 && fp->rotate_angle!=270)
-        raise_error(angle_error,45);
+void checkRect(FunctionParams* fp,int height, int width){
+    if(fp->thickness<=0)
+        raiseError(thickness_error,43);   
+    if (fp->color.r>255 || fp->color.g>255 ||fp->color.b>255 ||
+    fp->color.r<0 || fp->color.g<0 ||fp->color.b<0)
+        raiseError(color_error,43);
+    if(fp->fill){
+        if (fp->fill_color.r>255 || fp->fill_color.g>255 ||fp->fill_color.b>255||
+        fp->fill_color.r<0 || fp->fill_color.g<0 ||fp->fill_color.b<0)
+            raiseError(color_error,43);
+    }
+}
+
+void checkOrnament(FunctionParams* fp){
+    if (fp->pattern==0)
+        raiseError(pattern_error,43);
+    if(fp->thickness<=0)
+        raiseError(thickness_error,43); 
+    if(fp->count<=0)
+        raiseError(count_error,43);
+    if (fp->color.r>255 || fp->color.g>255 || fp->color.b>255||
+    fp->color.r<0 || fp->color.g<0 || fp->color.b<0)
+        raiseError(color_error,43);  
+}
+
+void checkRotate(FunctionParams* fp,int height,int width){
+    if(fp->x0<0)
+        fp->x0=0;
+
+    if(fp->x1<0)
+        fp->x1=0;
+
+    if(fp->y0<0)
+        fp->y0=0;
+
+    if(fp->y1<0)
+        fp->y1=0;
+
+     if(fp->x0>=width)
+        fp->x0=width-1;
+
+    if(fp->x1>=width)
+        fp->x1=width-1;
+
+    if(fp->y0>=height)
+        fp->y0=height-1;
+        
+    if(fp->y1>=height)
+        fp->y1=height-1;
+    
+    if (fp->angle!=90 && fp->angle!=180 && fp->angle!=270)
+       raiseError(angle_error,43);
 }
 #endif

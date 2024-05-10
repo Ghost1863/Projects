@@ -41,33 +41,29 @@ typedef struct{
 #pragma pop
 
 typedef struct{
-    char* input_file;
+	char* input_file;
     char* output_file;
+	int help;
+	
 	//rect flag
 	int rect;
-	int rect_left;
-	int rect_up;
-	int rect_right;
-	int rect_down;
-	int rect_thickness;
-	Rgb rect_color;
-	int rect_fill;
-	Rgb rect_fill_color;
+	int x0;
+	int x1;
+	int y0;
+	int y1;
+	int thickness;
+	Rgb color;
+	int fill;
+	Rgb fill_color;
 
 	//ornament flag
 	int ornament;
-	int ornament_pattern;
-	Rgb ornament_color;
-	int ornament_thickness;
-	int ornament_count;
+	int pattern;
+	int count;
 
 	//rotate flag
 	int rotate;
-	int rotate_left;
-	int rotate_up;
-	int rotate_right;
-	int rotate_down;
-	int rotate_angle;
+	int angle;
 }FunctionParams;
 
 #endif

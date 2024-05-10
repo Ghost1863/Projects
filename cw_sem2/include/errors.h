@@ -1,3 +1,6 @@
+#include <stdlib.h>
+#include <stdio.h>
+
 #ifndef ERRORS_H
 #define ERRORS_H
 
@@ -14,23 +17,33 @@
 #define ERR_MEMORY_ALLOCATION_FAILURE 46
 
 
-const char* color_error="Error: Invalid color format";
+extern const char* color_error;
 
-const char* coords_error="Error: Invalid coordinates";
+extern const char* coords_error;
 
-const char* thickness_error="Error: Invalid thickness";
+extern const char* thickness_error;
 
-const char* pattern_error="Error: Invalid pattern";
+extern const char* pattern_error;
 
-const char* count_error="Error: Invalid count";
+extern const char* count_error;
 
-const char* angle_error="Error: Invalid angle";
+extern const char* angle_error;
 
 
-const char* multiple_func_error="Error: More than one functions were called";
+extern const char* args_error;
 
-const char* input_file_error="Error: No input file";
+extern const char* multiple_func_error;
 
-const char* output_file_error="Error: No output file";
+extern const char* input_file_error;
+
+extern const char* output_file_error;
+
+extern const char* file_type_error;
+
+extern const char* file_opening_error;
+
+
+void raiseError(const char* message, int error_code);
+
 
 #endif

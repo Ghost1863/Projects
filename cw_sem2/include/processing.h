@@ -3,10 +3,14 @@
 #ifndef PROCESSING_H
 #define PROCESSING_H
 
-Rgb** draw_rectangle(FunctionParams* fp, BMPFile* bmpf);
+Rgb** drawRectangle(FunctionParams* fp, BMPFile* bmpf);
 
-Rgb** draw_ornament(FunctionParams* fp, BMPFile* bmpf);
+Rgb** drawOrnament(FunctionParams* fp, BMPFile* bmpf);
 
-Rgb** rotate_image(FunctionParams* fp,BMPFile* bmpf);
+Rgb** rotateImage(FunctionParams* fp,BMPFile* bmpf);
+
+Rgb** rotate(FunctionParams* fp,BMPFile* bmpf);
+
+void swapPixels(Rgb* a, Rgb* b);
 
 #endif

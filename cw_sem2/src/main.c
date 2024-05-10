@@ -8,26 +8,25 @@
 
 int main(char argc, char* argv[]){
    
-   FunctionParams* fp=parse_command_line(argc,argv);
-   BMPFile* bmpf=read_bmp(fp->input_file);
-    
+   FunctionParams* fp=parseCommandLine(argc,argv);
+   BMPFile* bmpf=readBMP(fp->input_file);
+   
    if (fp->rect){
-      check_rect(fp,bmpf->dibh.height,bmpf->dibh.width);
-      bmpf->rgb=draw_rectangle(fp,bmpf);
+      checkRect(fp,bmpf->dibh.height,bmpf->dibh.width);
+      bmpf->rgb=drawRectangle(fp,bmpf);
    }
    if (fp->ornament){
-      check_ornament(fp);
-      bmpf->rgb=draw_ornament(fp,bmpf);
+      checkOrnament(fp);
+      bmpf->rgb=drawOrnament(fp,bmpf);
    }
    if (fp->rotate){
-      check_rotate(fp,bmpf->dibh.height,bmpf->dibh.width);
-      bmpf->rgb=rotate_image(fp,bmpf);
+      checkRotate(fp,bmpf->dibh.height,bmpf->dibh.width);
+      bmpf->rgb=rotateImage(fp,bmpf);
    }
    
-
-   write_bmp(fp->output_file,bmpf);
-
-   free_bmpfile(bmpf);
+   writeBMP(fp->output_file,bmpf);
+   
+   freeBMPfile(bmpf);
    free(fp);
    return 0;
 }
